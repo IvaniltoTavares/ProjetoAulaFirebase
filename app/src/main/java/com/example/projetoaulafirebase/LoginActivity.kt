@@ -24,7 +24,7 @@ class LoginActivity : AppCompatActivity() {
         super.onStart()
             /*auth.signOut()*/
         val usuarioAtual = auth.currentUser
-        if (usuarioAtual != null){
+        if (/*usuarioAtual != null*/ true){
             val intent = Intent(this,PrincipalActivity::class.java)
             startActivity(intent)
         }

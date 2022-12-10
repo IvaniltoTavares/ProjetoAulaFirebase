@@ -1,14 +1,17 @@
 package com.example.projetoaulafirebase
 
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import com.example.projetoaulafirebase.databinding.ActivityMainBinding
 import com.example.projetoaulafirebase.databinding.ActivityPrincipalBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.storage.FirebaseStorage
 
 class PrincipalActivity : AppCompatActivity() {
     private  val binding by lazy {
@@ -16,6 +19,9 @@ class PrincipalActivity : AppCompatActivity() {
     }
     private val firestore by lazy {
         FirebaseFirestore.getInstance()
+    }
+    private val storage by lazy {
+        FirebaseStorage.getInstance()
     }
 
     override fun onStart() {
@@ -72,6 +78,18 @@ class PrincipalActivity : AppCompatActivity() {
             }
     }
 
+    private lateinit var  localImagemSelecionada: Uri
+
+    private val abrirGaleria = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ){uri ->
+        if (uri != null){
+            binding.imageUpload.setImageURI(uri)
+        }else{
+            Toast.makeText(this, "Nada selecionado", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -93,6 +111,17 @@ class PrincipalActivity : AppCompatActivity() {
                 }.addOnFailureListener{
                     Toast.makeText(this, "Erro ao salvar a tarefa", Toast.LENGTH_SHORT).show()
                 }
+        }
+
+        binding.btnGaleria.setOnClickListener{
+            abrirGaleria.launch("image/*")//mime typt  significa tipos de arquivos padrao
+        }
+
+        binding.btnUpload.setOnClickListener {
+            storage
+                .getReference("fotos")
+                .child("carros")// filtro
+
         }
     }
 }
